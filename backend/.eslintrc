@@ -1,0 +1,31 @@
+{
+	"root": true,
+	"parser": "@typescript-eslint/parser",
+	"plugins": ["@typescript-eslint", "prettier"],
+	"extends": ["plugin:@typescript-eslint/recommended", "prettier"],
+	"env": {
+		"node": true
+	},
+	"rules": {
+		"prettier/prettier": "error",
+		"max-classes-per-file": ["off"],
+		"no-console": ["off"],
+		"no-string-literal": ["off"],
+		"object-curly-spacing": ["error", "always"],
+		"@typescript-eslint/no-var-requires": ["off"],
+		"@typescript-eslint/no-explicit-any": ["off"],
+		"@typescript-eslint/explicit-module-boundary-types": ["off"],
+		"@typescript-eslint/ban-types": [
+				"error",
+			{
+				"types": {
+					"object": false,
+					"{}": false
+				}
+			}
+		],
+
+		"eol-last": ["error", "always"],
+		"max-len": ["error", 130]
+	}
+}

@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - ${REST_PORT}:${REST_PORT}
+    env_file:
+      - .env
+    stop_grace_period: 1m
+    healthcheck:
+      test: 'curl localhost:${REST_PORT}'
+      start_period: 20s
+      interval: 10s
+      retries: 4
