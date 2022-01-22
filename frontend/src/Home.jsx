@@ -1,4 +1,5 @@
-import React from "react";
+import React, {useCallback} from "react";
+import {useNavigate} from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -12,6 +13,16 @@ import VideoCameraFrontIcon from '@mui/icons-material/VideoCameraFront';
 
 
 const Home = props => {
+  const navigate = useNavigate();
+  const handleJoin = useCallback(() => {
+    const link = prompt('Enter meeting id');
+    navigate(`/meeting/${link}`);
+  }, [navigate]);
+
+  const handleCreate = useCallback(() => {
+    // API request here
+    navigate(`/meeting/dummy-id`);
+  }, [navigate]);
 
   return (
     <>
@@ -51,8 +62,8 @@ const Home = props => {
               spacing={2}
               justifyContent="center"
             >
-              <Button variant="contained">Create meeting</Button>
-              <Button variant="outlined">Join with link</Button>
+              <Button variant="contained" onClick={handleCreate}>Create meeting</Button>
+              <Button variant="outlined" onClick={handleJoin}>Join with link</Button>
             </Stack>
           </Container>
         </Box>
