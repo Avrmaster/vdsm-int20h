@@ -14,7 +14,7 @@ export class JitsiManager {
 	private readonly jwt!: JitsiSigner
 
 	public async createMeeting(): Promise<JitsiAccess> {
-		return this.createJitsiAccess(uuidv4())
+		return this.createJitsiAccess(uuidv4(), true)
 	}
 
 	public async createMeetingInvite(token: string): Promise<JitsiAccess> {
@@ -26,12 +26,12 @@ export class JitsiManager {
 			throw new ValidationException({ role: 'You are not creator of this meeting' })
 		}
 
-		return this.createJitsiAccess(roomName)
+		return this.createJitsiAccess(roomName, false)
 	}
 
-	private async createJitsiAccess(roomName: string): Promise<JitsiAccess> {
+	private async createJitsiAccess(roomName: string, creator: boolean): Promise<JitsiAccess> {
 		return {
-			jwt: await this.jwt.signJitsi(roomName, { creator: true, roomName }),
+			jwt: await this.jwt.signJitsi(roomName, { creator, roomName }),
 			roomName: `${CONFIG.jitsi.appId}/${roomName}`,
 		}
 	}
