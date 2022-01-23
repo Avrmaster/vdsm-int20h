@@ -10,19 +10,21 @@ import {
   Stack,
 } from '@mui/material'
 import VideoCameraFrontIcon from '@mui/icons-material/VideoCameraFront';
-
+import useAPI from './hooks/use-api'
 
 const Home = props => {
   const navigate = useNavigate();
+  const jitsiApi = useAPI()
   const handleJoin = useCallback(() => {
     const link = prompt('Enter meeting id');
     navigate(`/meeting/${link}`);
   }, [navigate]);
 
-  const handleCreate = useCallback(() => {
-    // API request here
-    navigate(`/meeting/dummy-id`);
-  }, [navigate]);
+  const handleCreate = useCallback(async() => {
+    const meetingInfo = await jitsiApi.createMeeting();
+    localStorage.setItem('jwt', meetingInfo.jwt);
+    navigate(`/meeting/${encodeURIComponent(meetingInfo.roomName)}`);
+  }, [navigate, jitsiApi]);
 
   return (
     <>

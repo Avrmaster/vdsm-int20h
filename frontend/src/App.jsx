@@ -3,7 +3,6 @@ import { Routes, Route } from "react-router-dom";
 import CssBaseline from '@mui/material/CssBaseline';
 
 import Home from './Home'
-import './App.css';
 
 const Meeting = React.lazy(() => import("./Meeting"));
 
@@ -14,7 +13,7 @@ function App() {
     <div className="App">
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/meeting/:meetingId" element={
+        <Route path="/meeting/:roomName" element={
           <React.Suspense fallback={<>Loading</>}>
             <Meeting />
           </React.Suspense>} />

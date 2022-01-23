@@ -16,26 +16,57 @@ import {
   Tooltip,
 } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
+import CircularProgress from '@mui/material/CircularProgress';
+import Jitsi from 'react-jitsi';
+
+function CircularIndeterminate() {
+  return (
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: "center"}}>
+      <CircularProgress />
+    </Box>
+  );
+}
+
 
 const Meeting = props => {
   const params = useParams();
-  console.log('MEETING ID', params.meetingId);
-
+  const jwt = sessionStorage.getItem('jwt')
+  let jitsiMeetAPI;
+  const configure = (jitsiMeetAPIInstance) => {
+    jitsiMeetAPI = jitsiMeetAPIInstance;
+  };
   return (
-    <Grid container component="main" sx={{ height: '100vh' }}>
-      {/* jitsi iFrame */}
-      <Grid item xs={12} sm={8} md={9}
-        sx={{
-          backgroundImage: 'url(https://source.unsplash.com/random)',
-          backgroundRepeat: 'no-repeat',
-          backgroundColor: (t) =>
-            t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      />
+    <Grid container component="main" sx={{ height: '100vh', display: 'flex' }}>
+      <Grid item xs={12} sm={8} md={9} sx={{ height: '100vh'}}
+      >
+        <Jitsi
+          roomName={decodeURIComponent(params.roomName)}
+          jwt={jwt} domain={'8x8.vc'}
+          loadingComponent={CircularIndeterminate}
+          containerStyle={{
+            height: '100%',
+            width: '100%'
+          }}
+          onAPILoad={jitsiMeetAPI=> configure(jitsiMeetAPI)}
+          config={
+            {
+              userInfo: {
+                email: "example@example.com",
+                displayName: "John Doe"
+              },
+              requireDisplayName: true,
+              prejoinPageEnabled: false,
+              toolbarButtons: [
+                'camera',
+                'microphone',
+                'desktop',
+                'settings',
+              ]
+            }
+          }
+        />
+      </Grid>
 
-      {/* Participants list */}
       <Grid item xs={false} sm={4} md={3} component={Paper} elevation={3} square>
         <Box
           sx={{
@@ -83,7 +114,8 @@ const Meeting = props => {
           </Typography>
           <Stack direction='column'>
             <Button variant="outlined" sx={{m: 1}}>Invite</Button>
-            <Button variant="outlined" color='error' sx={{m: 1}}>End for all</Button>
+            <Button variant="outlined" color='error' sx={{m: 1}}>End call for me</Button>
+            <Button variant="outlined" color='error' sx={{m: 1}}>End call for all</Button>
             </Stack>
           </Box>
         </Box>
