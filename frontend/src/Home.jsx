@@ -22,7 +22,7 @@ const Home = props => {
 
   const handleCreate = useCallback(async() => {
     const meetingInfo = await jitsiApi.createMeeting();
-    localStorage.setItem('jwt', meetingInfo.jwt);
+    sessionStorage.setItem('jwt', meetingInfo.jwt);
     navigate(`/meeting/${encodeURIComponent(meetingInfo.roomName)}`);
   }, [navigate, jitsiApi]);
 

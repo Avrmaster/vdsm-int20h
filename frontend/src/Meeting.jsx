@@ -1,5 +1,5 @@
-import React from "react";
-import { useParams } from "react-router-dom";
+import React, { useState } from 'react'
+import { useParams, useSearchParams } from 'react-router-dom'
 import {
   Typography,
   Box,
@@ -14,27 +14,52 @@ import {
   ListItemAvatar,
   IconButton,
   Tooltip,
-} from '@mui/material';
+  InputAdornment,
+  OutlinedInput,
+} from '@mui/material'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CircularProgress from '@mui/material/CircularProgress';
 import Jitsi from 'react-jitsi';
+import useApi from './hooks/use-api'
 
 function CircularIndeterminate() {
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: "center"}}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>
+      <Typography variant="h3">Loading...</Typography>
       <CircularProgress />
     </Box>
   );
 }
 
 
-const Meeting = props => {
+const Meeting = () => {
   const params = useParams();
-  const jwt = sessionStorage.getItem('jwt')
-  let jitsiMeetAPI;
-  const configure = (jitsiMeetAPIInstance) => {
-    jitsiMeetAPI = jitsiMeetAPIInstance;
-  };
+  const api = useApi();
+  const [searchParams] = useSearchParams();
+  const jwt = searchParams.jwt ?? sessionStorage.getItem('jwt')
+  // const [participants, setParticipants] = useState([]);
+  const [jitsiMeetAPI, setJitsiMeetAPI] = useState(null);
+  const [invite, setInvite] = useState(null);
+  // const addParticipant = (participant) => {
+  //   console.log(participant);
+  //   setParticipants(prevState => [...prevState,participant])
+  // }
+  const createInvite = async () => {
+    const response = await api.createInvite(jwt);
+    setInvite(window.location.origin + '/meeting/'+ encodeURIComponent(response.roomName) + '?jwt='+response.jwt)
+  }
+  // const kickParticipant = (participant) => {
+  //   setParticipants(prevState => [...prevState,participant])
+  // }
+
+  const addToClipBoard = () => {
+    navigator.clipboard.writeText(invite).then(function() {
+      console.log('Copying to clipboard was successful!');
+    }, function(err) {
+      console.error('Could not copy text: ', err);
+    });
+  }
   return (
     <Grid container component="main" sx={{ height: '100vh', display: 'flex' }}>
       <Grid item xs={12} sm={8} md={9} sx={{ height: '100vh'}}
@@ -47,7 +72,11 @@ const Meeting = props => {
             height: '100%',
             width: '100%'
           }}
-          onAPILoad={jitsiMeetAPI=> configure(jitsiMeetAPI)}
+          onAPILoad={jitsiMeetAPI=> {
+
+            // jitsiMeetAPI.addListener('participantJoined', addParticipant);
+            setJitsiMeetAPI(jitsiMeetAPI)
+          }}
           config={
             {
               userInfo: {
@@ -66,7 +95,7 @@ const Meeting = props => {
           }
         />
       </Grid>
-
+      { jitsiMeetAPI &&
       <Grid item xs={false} sm={4} md={3} component={Paper} elevation={3} square>
         <Box
           sx={{
@@ -94,8 +123,6 @@ const Meeting = props => {
                       </IconButton>
                     </Tooltip>
                   }
-                  // sx={{mx: 1}}
-                  // disablePadding
                 >
                   
                     <ListItemAvatar>
@@ -113,13 +140,31 @@ const Meeting = props => {
             Options
           </Typography>
           <Stack direction='column'>
-            <Button variant="outlined" sx={{m: 1}}>Invite</Button>
+            { !invite && <Button variant="outlined" sx={{m: 1}} onClick={createInvite}>Create invite link</Button>}
+            { invite &&
+              <OutlinedInput
+                sx={{m: 1}}
+                type='text'
+                value={invite}
+                readOnly
+                disabled
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      edge="end"
+                      onClick={addToClipBoard}
+                    >
+                      <ContentCopyIcon/>
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />}
             <Button variant="outlined" color='error' sx={{m: 1}}>End call for me</Button>
             <Button variant="outlined" color='error' sx={{m: 1}}>End call for all</Button>
             </Stack>
           </Box>
         </Box>
-      </Grid>
+      </Grid>}
     </Grid>
   )
 }
