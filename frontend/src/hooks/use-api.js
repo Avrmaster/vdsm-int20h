@@ -4,9 +4,8 @@ import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 
 const instance = axios.create({
-  baseURL: 'https://api.vdsm-20h.online'
-  }
-)
+  baseURL: "https://api.vdsm-20h.online",
+});
 
 const useApi = () => {
   const navigate = useNavigate();
@@ -19,15 +18,15 @@ const useApi = () => {
     } catch(err) {
       toast.error('Can\'t create the meeting! Try again.');
     }
-  }, [])
+  }, []);
 
   const createInvite = useCallback(async (jwt) => {
     try {
       const response = await instance.post('/jitsi/invite', null, {
         headers: {
           Authorization: `Bearer ${jwt}`
-        }
-      })
+        },
+      });
       if (response.status === 200) {
         return response.data
       }
@@ -35,7 +34,7 @@ const useApi = () => {
     } catch (err) {
       toast.error('Can\'t create the invitation! Try again.');
     }
-  }, [])
+  }, []);
 
   const getInfoByAlias = useCallback(async (alias) =>{
     try {
@@ -56,4 +55,4 @@ const useApi = () => {
   }
 }
 
-export default useApi
+export default useApi;
