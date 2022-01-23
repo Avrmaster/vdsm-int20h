@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import {
   Typography,
   Box,
@@ -56,7 +56,7 @@ const Meeting = () => {
     else {
       navigate('/');
     }
-  }, [navigate, alias, api])
+  }, [])
   const createInvite = async () => {
     setIsLoading(true);
     const response = await api.createInvite(meetingInfo.jwt);

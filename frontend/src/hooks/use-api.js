@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { useCallback } from 'react'
 
 const instance = axios.create({
   baseURL: 'https://api.vdsm-20h.online'
@@ -6,15 +7,15 @@ const instance = axios.create({
 )
 
 const useApi = () => {
-  const createMeeting = async () => {
+  const createMeeting = useCallback(async () => {
     const response = await instance.post('/jitsi/create')
     if (response.status === 200){
       return response.data;
     }
     //TODO: error handling
-  }
+  }, [])
 
-  const createInvite = async (jwt) => {
+  const createInvite = useCallback(async (jwt) => {
     const response = await instance.post('/jitsi/invite', null, {
       headers: {
         Authorization: `Bearer ${jwt}`
@@ -24,14 +25,14 @@ const useApi = () => {
       return response.data
     }
     //TODO: error handling
-  }
+  }, [])
 
-  const getInfoByAlias = async (alias) =>{
+  const getInfoByAlias = useCallback(async (alias) =>{
     const response = await instance.get('/jitsi/' + alias)
     if (response.status === 200){
       return response.data
     }
-  }
+  }, [])
 
   return {
     createMeeting,
