@@ -16,7 +16,7 @@ import {
   Tooltip,
   InputAdornment,
   OutlinedInput,
-  TextField,
+  TextField, LinearProgress,
 } from '@mui/material'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -39,6 +39,7 @@ const Meeting = () => {
   const params = useParams();
   const api = useApi();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const alias = params.alias ?? sessionStorage.getItem('meeting-alias');
   const [participants, setParticipants] = useState([]);
   const [meetingInfo, setMeetingInfo] = useState(null);
@@ -57,6 +58,7 @@ const Meeting = () => {
     }
   }, [navigate, alias, api])
   const createInvite = async () => {
+    setIsLoading(true);
     const response = await api.createInvite(meetingInfo.jwt);
     setInvite(window.location.origin + '/meeting/' + response.alias)
   }
@@ -76,8 +78,9 @@ const Meeting = () => {
   const hangUp = useCallback(() => {
     if (jitsiMeetAPI)
       jitsiMeetAPI.executeCommand('hangup');
+    sessionStorage.removeItem('meeting-alias');
     setTimeout(() => {
-      navigate('/');
+      navigate('/', {replace: true});
     }, 500);
   }, [jitsiMeetAPI, navigate]);
 
@@ -186,7 +189,8 @@ const Meeting = () => {
                       setMyProfile((p) => ({...p, displayName: e.target.value}))}
                     }
                   />
-                {!invite && isCreator && <Button variant="outlined" sx={{ m: 1 }} onClick={createInvite}>Create invite link</Button>}
+                {!invite && !isLoading && isCreator && <Button variant="outlined" sx={{ m: 1 }} onClick={createInvite}>Create invite link</Button>}
+                {!invite && isLoading && isCreator && <LinearProgress />}
                 {invite &&
                   <OutlinedInput
                     sx={{ m: 1 }}
@@ -205,7 +209,7 @@ const Meeting = () => {
                       </InputAdornment>
                     }
                   />}
-                <Button variant="outlined" color='error' sx={{ m: 1 }} onClick={hangUp}>End call for me</Button>
+                <Button variant="outlined" color='error' sx={{ m: 1 }} onClick={hangUp}>Leave meeting</Button>
               </Stack>
             </Box>
           </Box>
