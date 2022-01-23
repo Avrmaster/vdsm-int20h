@@ -16,6 +16,7 @@ import {
   Tooltip,
   InputAdornment,
   OutlinedInput,
+  TextField,
 } from '@mui/material'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -45,6 +46,8 @@ const Meeting = () => {
   const [jitsiMeetAPI, setJitsiMeetAPI] = useState(null);
   const [invite, setInvite] = useState(null);
 
+  const isCreator = meetingInfo && meetingInfo.isCreator;
+
   useEffect(async () => {
     if (alias) {
       setMeetingInfo(await api.getInfoByAlias(alias));
@@ -52,7 +55,7 @@ const Meeting = () => {
     else {
       navigate('/');
     }
-  },[])
+  }, [navigate, alias, api])
   const createInvite = async () => {
     const response = await api.createInvite(meetingInfo.jwt);
     setInvite(window.location.origin + '/meeting/' + response.alias)
@@ -76,7 +79,7 @@ const Meeting = () => {
     setTimeout(() => {
       navigate('/');
     }, 500);
-  }, [jitsiMeetAPI]);
+  }, [jitsiMeetAPI, navigate]);
 
   useEffect(() => {
     if (!jitsiMeetAPI)
@@ -144,7 +147,7 @@ const Meeting = () => {
                 <ListItem
                   key={participant.participantId}
                   secondaryAction={
-                    !(myProfile && myProfile.id === participant.participantId) ?
+                    isCreator && !(myProfile && myProfile.id === participant.participantId) ?
                       <Tooltip title="Remove participant">
                         <IconButton onClick={() => kickParticipant(participant.participantId)}>
                           <CancelIcon />
@@ -171,7 +174,19 @@ const Meeting = () => {
                 Options
               </Typography>
               <Stack direction='column'>
-                {!invite && <Button variant="outlined" sx={{ m: 1 }} onClick={createInvite}>Create invite link</Button>}
+                <TextField
+                    id="outlined-name"
+                    label="My name"
+                    sx={{m: 1}}
+                    value={myProfile?.displayName || ''}
+                    onChange={(e) => {
+                      if (jitsiMeetAPI) {
+                        jitsiMeetAPI.executeCommand('displayName', e.target.value)
+                      }
+                      setMyProfile((p) => ({...p, displayName: e.target.value}))}
+                    }
+                  />
+                {!invite && isCreator && <Button variant="outlined" sx={{ m: 1 }} onClick={createInvite}>Create invite link</Button>}
                 {invite &&
                   <OutlinedInput
                     sx={{ m: 1 }}
