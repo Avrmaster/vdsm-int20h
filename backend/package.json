@@ -11,7 +11,7 @@
     "migration:run": "./typeorm-register.sh migration:run",
     "generate:swagger": "swaggerGen -c swaggerConfig.js",
     "build": "yarn generate:swagger && tsc --strictPropertyInitialization false && sh copy-build-files.sh",
-    "build:start": "NODE_PATH=dist/src node ./dist/src"
+    "build:start": "yarn migration:run && NODE_PATH=dist/src node ./dist/src"
   },
   "author": "",
   "license": "ISC",

@@ -3,9 +3,10 @@ import { ContextRequest, GET, Path, PathParam, POST } from 'typescript-rest'
 import { inject } from 'inversify'
 import { Request } from 'express'
 
-import { JitsiManager } from 'application/jitsi/JitsiManager'
-import { JitsiAccess } from 'domain/jitsi/Jitis.dto'
 import { ValidationException } from 'domain/exceptions'
+import { JitsiAccess } from 'domain/jitsi/Jitis.dto'
+
+import { JitsiManager } from 'application/jitsi/JitsiManager'
 
 @Path('jitsi')
 @provide(JitsiController)
@@ -32,5 +33,11 @@ export class JitsiController {
 		}
 
 		return this.jitsiManager.createMeetingInvite(jwt)
+	}
+
+	@GET
+	@Path(':alias')
+	public async getAccess(@PathParam('alias') alias: string): Promise<JitsiAccess> {
+		return this.jitsiManager.getAccess(alias)
 	}
 }

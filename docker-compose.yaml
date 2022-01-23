@@ -1,5 +1,16 @@
 version: '3.8'
 services:
+  pg:
+    image: postgres:12.5
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_DATABASE}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - 127.0.0.1:${EXTERNAL_DB_PORT}:5432
+    volumes:
+      - pg_volume:/var/lib/postgresql/data
   backend:
     build:
       context: ./backend
@@ -7,6 +18,11 @@ services:
       - ${REST_PORT}:${REST_PORT}
     env_file:
       - .env
+    depends_on:
+      - pg
+    environment: # link to PG container
+      - DB_HOST=pg
+      - DB_PORT=5432
     stop_grace_period: 1m
     healthcheck:
       test: 'curl localhost:${REST_PORT}'
@@ -18,3 +34,5 @@ services:
       context: ./frontend
     ports:
       - ${FE_PORT}:${FE_PORT}
+volumes:
+  pg_volume:

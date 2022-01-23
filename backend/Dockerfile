@@ -8,4 +8,5 @@ RUN yarn install --pure-lockfile
 
 ADD . .
 RUN yarn build
+
 CMD ["yarn", "build:start"]

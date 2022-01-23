@@ -22,7 +22,7 @@ export class JitsiSigner {
 		)) as string
 	}
 
-	public async signJitsi(roomName: string, payload?: any): Promise<string> {
+	public async signJitsi(roomName: string, isCreator: boolean): Promise<string> {
 		const now = new Date()
 		const jitsiPK = await this.getJitsiPK()
 
@@ -35,7 +35,7 @@ export class JitsiSigner {
 						name: 'int20 h',
 						avatar: '',
 						email: 'int20h@gmail.com',
-						moderator: true,
+						moderator: isCreator,
 						instanceId: 'int20DEV',
 					},
 					features: {
@@ -45,7 +45,7 @@ export class JitsiSigner {
 						'outbound-call': true,
 					},
 				},
-				payload,
+				payload: { isCreator, roomName },
 				iss: 'chat',
 				room: roomName,
 				sub: CONFIG.jitsi.appId,
@@ -57,7 +57,7 @@ export class JitsiSigner {
 		)
 	}
 
-	public async parsePayload<T>(token: string): Promise<T> {
+	public async parsePayload(token: string): Promise<{ isCreator: boolean; roomName: string }> {
 		const jitsiPK = await this.getJitsiPK()
 		try {
 			return (verify(token, jitsiPK, { algorithms: ['RS256'] }) as any)?.payload || {}
