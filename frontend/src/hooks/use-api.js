@@ -26,9 +26,17 @@ const useApi = () => {
     //TODO: error handling
   }
 
+  const getInfoByAlias = async (alias) =>{
+    const response = await instance.get('/jitsi/' + alias)
+    if (response.status === 200){
+      return response.data
+    }
+  }
+
   return {
     createMeeting,
-    createInvite
+    createInvite,
+    getInfoByAlias
   }
 }
 

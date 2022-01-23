@@ -13,7 +13,7 @@ function App() {
     <div className="App">
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/meeting/:roomName" element={
+        <Route path="/meeting/:alias" element={
           <React.Suspense fallback={<>Loading</>}>
             <Meeting />
           </React.Suspense>} />

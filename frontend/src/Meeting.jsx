@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import {
   Typography,
   Box,
@@ -37,16 +37,25 @@ function CircularIndeterminate() {
 const Meeting = () => {
   const params = useParams();
   const api = useApi();
-  const [searchParams] = useSearchParams();
-  const jwt = searchParams.jwt ?? sessionStorage.getItem('jwt')
+  const navigate = useNavigate();
+  const alias = params.alias;
   const [participants, setParticipants] = useState([]);
+  const [meetingInfo, setMeetingInfo] = useState(null);
   const [myProfile, setMyProfile] = useState(null);
   const [jitsiMeetAPI, setJitsiMeetAPI] = useState(null);
   const [invite, setInvite] = useState(null);
 
+  useEffect(async () => {
+    if (alias) {
+      setMeetingInfo(await api.getInfoByAlias(alias));
+    }
+    else {
+      navigate('/');
+    }
+  },[])
   const createInvite = async () => {
-    const response = await api.createInvite(jwt);
-    setInvite(window.location.origin + '/meeting/' + encodeURIComponent(response.roomName) + '?jwt=' + response.jwt)
+    const response = await api.createInvite(meetingInfo.jwt);
+    setInvite(window.location.origin + '/meeting/' + response.alias)
   }
 
   const addToClipBoard = () => {
@@ -64,6 +73,9 @@ const Meeting = () => {
   const hangUp = useCallback(() => {
     if (jitsiMeetAPI)
       jitsiMeetAPI.executeCommand('hangup');
+    setTimeout(() => {
+      navigate('/');
+    }, 500);
   }, [jitsiMeetAPI]);
 
   useEffect(() => {
@@ -82,9 +94,9 @@ const Meeting = () => {
     <Grid container component="main" sx={{ height: '100vh', display: 'flex' }}>
       <Grid item xs={12} sm={8} md={9} sx={{ height: '100vh' }}
       >
-        <Jitsi
-          roomName={decodeURIComponent(params.roomName)}
-          jwt={jwt} domain={'8x8.vc'}
+        {meetingInfo ? <Jitsi
+          roomName={meetingInfo.roomName}
+          jwt={meetingInfo.jwt} domain={'8x8.vc'}
           loadingComponent={CircularIndeterminate}
           containerStyle={{
             height: '100%',
@@ -110,7 +122,7 @@ const Meeting = () => {
               ]
             }
           }
-        />
+        /> : <CircularIndeterminate/> }
       </Grid>
       {jitsiMeetAPI &&
         <Grid item xs={false} sm={4} md={3} component={Paper} elevation={3} square>
@@ -179,7 +191,6 @@ const Meeting = () => {
                     }
                   />}
                 <Button variant="outlined" color='error' sx={{ m: 1 }} onClick={hangUp}>End call for me</Button>
-                <Button variant="outlined" color='error' sx={{ m: 1 }}>End call for all</Button>
               </Stack>
             </Box>
           </Box>
