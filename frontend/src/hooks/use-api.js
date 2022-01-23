@@ -1,5 +1,7 @@
 import axios from 'axios'
 import { useCallback } from 'react'
+import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
 
 const instance = axios.create({
   baseURL: 'https://api.vdsm-20h.online'
@@ -7,32 +9,45 @@ const instance = axios.create({
 )
 
 const useApi = () => {
+  const navigate = useNavigate();
   const createMeeting = useCallback(async () => {
-    const response = await instance.post('/jitsi/create')
-    if (response.status === 200){
-      return response.data;
+    try {
+      const response = await instance.post('/jitsi/create')
+      if (response.status === 200) {
+        return response.data;
+      }
+    } catch(err) {
+      toast.error('Can\'t create the meeting! Try again.');
     }
-    //TODO: error handling
   }, [])
 
   const createInvite = useCallback(async (jwt) => {
-    const response = await instance.post('/jitsi/invite', null, {
-      headers: {
-        Authorization: `Bearer ${jwt}`
+    try {
+      const response = await instance.post('/jitsi/invite', null, {
+        headers: {
+          Authorization: `Bearer ${jwt}`
+        }
+      })
+      if (response.status === 200) {
+        return response.data
       }
-    })
-    if (response.status === 200){
-      return response.data
+      return {}
+    } catch (err) {
+      toast.error('Can\'t create the invitation! Try again.');
     }
-    //TODO: error handling
   }, [])
 
   const getInfoByAlias = useCallback(async (alias) =>{
-    const response = await instance.get('/jitsi/' + alias)
-    if (response.status === 200){
-      return response.data
+    try {
+      const response = await instance.get('/jitsi/' + alias)
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch {
+      toast.error('Can\'t join the meeting! Check the link or meeting id.');
+      navigate('/', { replace: true });
     }
-  }, [])
+  }, [navigate])
 
   return {
     createMeeting,

@@ -24,6 +24,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Jitsi from 'react-jitsi';
 import useApi from './hooks/use-api'
 import { useCallback } from 'react';
+import { toast } from 'react-toastify'
 
 function CircularIndeterminate() {
   return (
@@ -54,6 +55,7 @@ const Meeting = () => {
       setMeetingInfo(await api.getInfoByAlias(alias));
     }
     else {
+      toast.error('Can\'t join the meeting! Check the link or meeting id.');
       navigate('/');
     }
   }, [])
@@ -65,9 +67,9 @@ const Meeting = () => {
 
   const addToClipBoard = () => {
     navigator.clipboard.writeText(invite).then(function () {
-      console.log('Copying to clipboard was successful!');
+      toast.success('Copied the invitation to clipboard!')
     }, function (err) {
-      console.error('Could not copy text: ', err);
+      toast.success('Could not copy');
     });
   }
 
