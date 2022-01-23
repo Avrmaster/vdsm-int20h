@@ -39,7 +39,7 @@ const Meeting = () => {
   const params = useParams();
   const api = useApi();
   const navigate = useNavigate();
-  const alias = params.alias;
+  const alias = params.alias ?? sessionStorage.getItem('meeting-alias');
   const [participants, setParticipants] = useState([]);
   const [meetingInfo, setMeetingInfo] = useState(null);
   const [myProfile, setMyProfile] = useState(null);

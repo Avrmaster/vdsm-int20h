@@ -16,13 +16,15 @@ const Home = props => {
   const navigate = useNavigate();
   const jitsiApi = useAPI()
   const handleJoin = useCallback(() => {
-    const link = prompt('Enter meeting id');
-    navigate(`/meeting/${link}`);
+    const meetingId = prompt('Enter meeting id');
+    if (meetingId)
+      navigate(`/meeting/${meetingId}`);
   }, [navigate]);
 
   const handleCreate = useCallback(async() => {
     const meetingInfo = await jitsiApi.createMeeting();
-    navigate(`/meeting/${meetingInfo.alias}`);
+    sessionStorage.setItem('meeting-alias', meetingInfo.alias);
+    navigate(`/meeting`);
   }, [navigate, jitsiApi]);
 
   return (

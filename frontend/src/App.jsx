@@ -17,6 +17,10 @@ function App() {
           <React.Suspense fallback={<>Loading</>}>
             <Meeting />
           </React.Suspense>} />
+        <Route path="/meeting" element={
+          <React.Suspense fallback={<>Loading</>}>
+            <Meeting />
+          </React.Suspense>} />
       </Routes>
     </div>
     </>
