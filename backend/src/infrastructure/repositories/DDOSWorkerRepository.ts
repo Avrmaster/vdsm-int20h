@@ -44,7 +44,7 @@ export class DDOSWorkerRepository {
 				`
             INSERT INTO ddos_workers(uuid, password, readable_name, processes_count)
             VALUES ($1, $2, $3, $4)
-            ON CONFLICT
+            ON CONFLICT (uuid)
                 DO UPDATE
                 SET readable_name   = $3,
                     processes_count = $4
@@ -88,14 +88,21 @@ export class DDOSWorkerRepository {
 	): Promise<DDOSWorker[]> {
 		const res = await this.db.query(
 			`
-          SELECT ddos_workers.*, ARRAY_AGG(tasks) AS tasks
+          SELECT ddos_workers.*, JSON_AGG(tasks) AS tasks
           FROM ddos_workers
-                   LEFT JOIN ddos_tasks tasks ON ddos_workers.uuid = tasks.worker_uuid
+                   LEFT JOIN LATERAL (
+              SELECT *
+              FROM ddos_tasks
+              WHERE ddos_workers.uuid = ddos_tasks.worker_uuid
+              ORDER BY ddos_tasks.created_at DESC
+              LIMIT 10
+              ) tasks ON tasks.worker_uuid = ddos_workers.uuid
           WHERE ddos_workers.uuid = ANY ($1)
           GROUP BY ddos_workers.uuid
 			`,
 			[uuids],
 		)
+
 		return checkAndSort({
 			requestedIds: uuids,
 			res,
