@@ -26,9 +26,9 @@ export class DDOSController {
 	@GET
 	@Path('active-workers')
 	public async getActiveWorkers(
-		@QueryParam('minutesInterval') minutesInterval = 10,
+		@QueryParam('minutesInterval') minutesInterval?: number,
 	): Promise<DDOSWorker[]> {
-		return this.repo.getActiveWorkers(minutesInterval)
+		return this.repo.getActiveWorkers(minutesInterval || 10)
 	}
 
 	@GET

@@ -29,11 +29,11 @@ services:
       start_period: 20s
       interval: 10s
       retries: 4
-#  frontend:
-#    build:
-#      context: ./frontend
-#    ports:
-#      - ${FE_PORT}:${FE_PORT}
+  frontend:
+    build:
+      context: ./frontend
+    volumes:
+      - /var/www/ddoscluster/:/app/build-web
   nginx:
     container_name: loadbalancer-nginx
     image: falkot26/takeuseat:nginx

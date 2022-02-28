@@ -1,27 +1,19 @@
-# Build image
-FROM node:14-alpine AS builder
-
-ENV NODE_ENV production
-
+FROM node:16-alpine
 WORKDIR /app
 
-COPY package.json .
+COPY tsconfig.json ./tsconfig.json
+COPY public ./public
 
-COPY package-lock.json .
+ADD ./package.json .
+ADD ./yarn.lock    .
 
-RUN npm install
+RUN yarn --pure-lockfile
 
-COPY . .
+COPY src ./src
+RUN yarn build
 
-RUN npm run build
-
-# Production image
-FROM nginx:1.21.5-alpine as production
-
-ENV NODE_ENV production
-
-COPY --from=builder /app/build /usr/share/nginx/html
-
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-CMD ["nginx", "-g", "daemon off;"]
+RUN mkdir /temp-web
+# ----------| react build |----------------
+RUN cp -R -p  /app/build/* /temp-web/
+# --------------------| mounted volume |---
+CMD cp -R /temp-web/*   /app/build-web/

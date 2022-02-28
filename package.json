@@ -1,0 +1,14 @@
+{
+	"name": "ddos-cluster",
+	"version": "1.0.0",
+	"private": true,
+	"dependencies": {
+		"prettier": "^2.5.1",
+		"eslint": "^8.7.0",
+		"eslint-config-prettier": "^8.3.0",
+		"eslint-plugin-prettier": "^4.0.0",
+		"@typescript-eslint/eslint-plugin": "^5.10.0",
+		"@typescript-eslint/parser": "^5.10.0"
+	},
+	"prettier": "./prettier.js"
+}
