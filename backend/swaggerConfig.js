@@ -10,6 +10,6 @@ module.exports = {
 		ignore: ['**/node_modules/**'],
 
 		version: require('./package.json').version,
-		name: '❤️ INT20h TEST ❤️',
+		name: '❤️ Русский корабль, иди нахуй! ❤️',
 	},
 }
