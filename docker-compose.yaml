@@ -29,10 +29,21 @@ services:
       start_period: 20s
       interval: 10s
       retries: 4
-  frontend:
+#  frontend:
+#    build:
+#      context: ./frontend
+#    ports:
+#      - ${FE_PORT}:${FE_PORT}
+  nginx:
+    container_name: loadbalancer-nginx
+    image: falkot26/takeuseat:nginx
     build:
-      context: ./frontend
-    ports:
-      - ${FE_PORT}:${FE_PORT}
+      context: ./nginx
+    restart: always
+    network_mode: host
+    volumes:
+      # Webpages static sources
+      - /var/www:/var/www
 volumes:
   pg_volume:
+  redis-data:

@@ -1,4 +1,5 @@
 import { PoolConfig } from 'pg'
+import { ClientOpts } from 'redis'
 
 const CONFIG = {
 	rest: {
@@ -18,5 +19,11 @@ const CONFIG = {
 		idleTimeoutMillis: 30000,
 		connectionTimeoutMillis: 3000,
 	} as PoolConfig,
+	redis: {
+		host: process.env.REDIS_HOST || 'localhost',
+		port: parseInt(process.env.REDIS_PORT || '6379'),
+		database: parseInt(process.env.REDIS_DATABASE || '0'),
+		password: process.env.REDIS_PASSWORD,
+	} as ClientOpts,
 }
 export { CONFIG }
